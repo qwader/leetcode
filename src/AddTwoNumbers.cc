@@ -1,46 +1,47 @@
 /**
-Given an array of integers, find two numbers such that they add up to a specific target number.
+ * You are given two linked lists representing two non-negative numbers. 
+ * The digits are stored in reverse order and each of their nodes contain a single digit. 
+ * Add the two numbers and return it as a linked list.
 
-The function twoSum should return indices of the two numbers such that they add up to the target, where index1 must be less than index2. Please note that your returned answers (both index1 and index2) are not zero-based.
-
-You may assume that each input would have exactly one solution.
-
-Input: numbers={2, 7, 11, 15}, target=9
-Output: index1=1, index2=2 
+Input: (2 -> 4 -> 3) + (5 -> 6 -> 4)
+Output: 7 -> 0 -> 8
 **/
 
-
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
 class Solution {
 public:
-    vector<int> twoSum(vector<int> &numbers, int target) {
-        map<int, int> m;
-        map<int, int>::iterator itr_map;
-        int index;
-        vector<int> ret;
-        for(index = 0; index < numbers.size(); index++){
-            itr_map = m.find(numbers[index]);
-            if(itr_map != m.end()){
-                itr_map->second = index;
-            }
-            else {
-                m.insert(pair<int, int>(numbers[index], index));
-            }
+    ListNode *addTwoNumbers(ListNode *l1, ListNode *l2) {
+        if(l1 == NULL || l2 == NULL){
+            return l1 ? l1 : l2;
         }
-        for(index = 0; index < numbers.size(); index++){
-            int need = target - numbers[index];
-            itr_map = m.find(need);
-            if(itr_map == m.end()){
-                continue;
-            }
-            if(itr_map->second != index){
-                ret.push_back(index + 1);
-                ret.push_back(itr_map->second + 1);
-                return ret;
-            }
+        ListNode ret(0);
+        ListNode **p = &ret.next;
+        int carry = 0;
+        while(l1 && l2){
+            *p = new ListNode((l1->val + l2->val + carry) % 10);
+            carry = (l1->val + l2->val + carry) / 10;
+            p = &(*p)->next;
+            l1 = l1->next;
+            l2 = l2->next;
+        };
+        ListNode *res = l1 ? l1 : l2;
+        while(res){
+            *p = new ListNode((res->val + carry) % 10);
+            carry = (res->val + carry) / 10;
+            res = res->next;
+            p = &(*p)->next;
         }
-        ret.push_back(-1);
-        ret.push_back(-1);
-        return ret;
+        if(carry){
+            *p = new ListNode(carry);
+        }
+        return ret.next;
     }
 };
 
